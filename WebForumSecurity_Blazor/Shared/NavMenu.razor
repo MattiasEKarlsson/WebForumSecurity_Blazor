@@ -1,29 +1,19 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">WebForumSecurity_Blazor</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+﻿<nav class="navbar navbar-expand-sm navbar-light bg-light p-0">
+    <a class="navbar-brand mx-4" href="#">Webbsäkerhet</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse pr-2">
+        <ul class="navbar-nav mr-auto"></ul>
+        <ul class="my-0 navbar-nav">
+                    <li class="nav-item p-0">
+                        <NavLink class="nav-link" href="posts">
+                            <span class="p-2">
+                                Forum Post´s
+                            </span>
+                        </NavLink>
+                    </li>
+        </ul>
     </div>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="postindex">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Forum Posts
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
+</nav>

@@ -18,18 +18,21 @@ namespace WebForumSecurity_Blazor.DataAccess
 
         public async Task CreatePost(Post post)
         {
-            post.Id = Guid.NewGuid();
-            post.TimeStamp = DateTime.Now;
-            string encodedContent = HttpUtility.HtmlEncode(post.Content);
             
-            foreach (var tag in allowedTags)
-            {
-                string encodedTag = HttpUtility.HtmlEncode(tag);
-                encodedContent = encodedContent.Replace(encodedTag, tag);
-            }
-            post.Content = encodedContent;
-            _db.Add(post);
-            await _db.SaveChangesAsync();
+                post.Id = Guid.NewGuid();
+                post.TimeStamp = DateTime.Now;
+                string encodedContent = HttpUtility.HtmlEncode(post.Content);
+
+                foreach (var tag in allowedTags)
+                {
+                    string encodedTag = HttpUtility.HtmlEncode(tag);
+                    encodedContent = encodedContent.Replace(encodedTag, tag);
+                }
+                post.Content = encodedContent;
+                _db.Add(post);
+                await _db.SaveChangesAsync();
+            
+            
         }
 
         public async Task DeletePost(Guid postId)

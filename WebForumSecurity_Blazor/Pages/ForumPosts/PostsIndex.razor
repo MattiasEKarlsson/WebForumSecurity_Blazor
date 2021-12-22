@@ -1,4 +1,4 @@
-﻿@page "/postindex"
+﻿@page "/posts"
 @using WebForumSecurity_Blazor.Models
 @inject IPostRepository PostRep 
 
@@ -34,7 +34,7 @@
     private async Task DeletePost(Guid id)
     {
         await PostRep.DeletePost(id);
-        NavManager.NavigateTo("postindex", true);
+        NavManager.NavigateTo("posts", true);
     }
     
     

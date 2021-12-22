@@ -1,19 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>WebForumSecurity_Blazor</PageTitle>
+<PageTitle>Webbsäkerhet</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
+
         <NavMenu />
+    <div class="main container mt-5">
+        @Body
     </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+    
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
