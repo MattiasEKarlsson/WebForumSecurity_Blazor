@@ -1,0 +1,47 @@
+﻿@page "/createpost"
+@using WebForumSecurity_Blazor.Models
+@inject IPostRepository PostRep 
+
+<h4> Create a Post</h4>
+<hr />
+<div class="row">
+    <div class="col">
+        <EditForm Model="post" OnValidSubmit="HandleHotelRoomUpsert">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label>Header</label>
+                <InputText @bind-Value="post.Header" class="form-control"></InputText>
+                
+            </div>
+            <div class="form-group">
+                <label>Content</label>
+                <InputTextArea style="height:300px;" @bind-Value="post.Content" class="form-control"></InputTextArea>
+            </div>
+            <div class="form-group mt-2">
+                <input type="submit" value="POST" class="btn btn-success w-100" />
+            </div>
+            <div class="form-group">
+                    
+                    <NavLink href="postindex" class="btn btn-secondary">Back</NavLink>
+                </div>
+        </EditForm>
+    </div>
+</div>
+@code {
+    private Post post { get; set; } = new Post();
+
+    protected override async Task OnInitializedAsync()
+    {
+        post = new Post();
+    }
+    private async Task HandleHotelRoomUpsert()
+    {
+        
+               
+        await PostRep.CreatePost(post);
+                
+                
+
+        NavManager.NavigateTo("postindex");
+    }
+}

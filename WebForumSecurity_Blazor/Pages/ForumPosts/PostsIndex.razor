@@ -1,0 +1,41 @@
+﻿@page "/postindex"
+@using WebForumSecurity_Blazor.Models
+@inject IPostRepository PostRep 
+
+<p>
+    <NavLink href="createpost" class="btn btn-secondary w-100" style="width: 60vw" asp-action="Create">Create New Post</NavLink>
+</p>
+
+<div class="container d-flex justify-content-center">
+    <div>
+     @foreach (var post in Posts) {
+      <div class="card m-2" style="width: 60vw; ">
+        <div class="card-body">
+            <p class="card-subtitle mb-2 text-muted" style="font-size: 0.5rem;">@post.TimeStamp</p>
+            <h3 class="card-title">@post.Header</h3>
+            <p class="card-subtitle mb-2 text-muted" style="font-size: 1rem;">@((MarkupString)post.Content)</p>
+        </div>
+      </div>
+}
+    </div>
+</div>
+
+
+
+@code {
+    private IEnumerable<Post> Posts { get; set; } = new List<Post>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Posts = await PostRep.GetAllPosts();
+    }
+
+    private async Task DeletePost(Guid id)
+    {
+        await PostRep.DeletePost(id);
+        NavManager.NavigateTo("postindex", true);
+    }
+    
+    
+}
