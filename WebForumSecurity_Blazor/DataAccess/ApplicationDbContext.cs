@@ -8,5 +8,6 @@ namespace WebForumSecurity_Blazor.DataAccess
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<Post> Posts { get; set; }
+        public DbSet<ApplicationFile> File { get; set; }
     }
 }
