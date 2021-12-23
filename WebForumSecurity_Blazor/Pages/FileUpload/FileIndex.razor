@@ -12,6 +12,7 @@
 @using WebForumSecurity_Blazor.Utilitys
 @inject IFileHandler FileHandler
 @inject IWebHostEnvironment Environment
+@inject IJSRuntime JS
 
 <h3>Upload Files</h3>
 <p>
@@ -35,6 +36,7 @@ else
                     <li>Name: @file.UntrustedName</li>
                     <li>Last modified: @file.TimeStamp.ToString()</li>
                     <li>Content type: @file.Data</li>
+                    
                 </ul>
             </li>
         }
@@ -70,9 +72,9 @@ else
             <td>
                 @file.Size
             </td>            
-            <td>               
-                 <a asp-action="Download" asp-route-id="@file.Id">Download</a>
-                <a asp-action="Delete" asp-route-id="@file.Id">Delete</a>
+            <td>     
+                 <button @onclick="()=>DownloadFileFromStream(file.Id)" class="btn btn-primary" >Download</button>
+                 <button @onclick="()=>Delete(file.Id)" class="btn btn-danger">Delete</button>
             </td>
         </tr>
 }
@@ -108,7 +110,32 @@ else
         selectedFile.Data = buffer;
 
         await FileHandler.UploadFile(selectedFile);
+        NavManager.NavigateTo("files", true);
+    }
+
+
+    private Stream GetFileStream(byte[] filebyte)
+    {
+        var fileStream = new MemoryStream(filebyte);
+        return fileStream;
+    }
+
+    private async Task DownloadFileFromStream(Guid id)
+    {
+        var applicationFile = await FileHandler.DownloadFile(id);
+        var fileStream = GetFileStream(applicationFile.Data);
+        var fileName = applicationFile.UntrustedName;
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+
+    private async Task Delete(Guid id)
+    {
+        await FileHandler.Delete(id);
+        NavManager.NavigateTo("files", true);
     }
 }
+
 
 
