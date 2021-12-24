@@ -9,17 +9,15 @@
 @using Microsoft.Extensions.Logging
 @using System.Web
 @using WebForumSecurity_Blazor.Models
-@using WebForumSecurity_Blazor.Utilitys
+@using BlazorInputFile
+@using System.Net.Http
 @inject IFileHandler FileHandler
 @inject IWebHostEnvironment Environment
 @inject IJSRuntime JS
 
 <h3>Upload Files</h3>
 <p>
-    <label>
-        
-        <InputFile OnChange="@LoadFiles"/>
-    </label>
+       <InputFile OnChange="UploadFile"  class="btn-primary"/>
 </p>
 
 @if (isLoading)
@@ -49,7 +47,7 @@ else
     <thead>
         <tr>
             <th>
-                TimeStamp
+                Uploaded
             </th>
             <th>
                 Name
@@ -82,9 +80,12 @@ else
 </table>
 
 @code {
+    private ApplicationFile selectedFile = new ApplicationFile();
+    private byte[] FileUploaded;
+
     private List<ApplicationFile> loadedFiles = new();
     private IEnumerable<ApplicationFile> Files { get; set; } = new List<ApplicationFile>();
-    private ApplicationFile selectedFile = new ApplicationFile();
+
     private long maxFileSize = 10 * 1048576;
     private int maxAllowedFiles = 1;
     private bool isLoading;
@@ -92,32 +93,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         Files = await FileHandler.GetAllFiles();
-    }
-
-    private async Task LoadFiles(InputFileChangeEventArgs e)
-    {
-        var fileformat = "image/png";
-        //get file
-        var imageFile = await e.File.RequestImageFileAsync(fileformat, 1000, 1000);
-        //Convert to byte array
-        var buffer = new byte[imageFile.Size];
-        await imageFile.OpenReadStream().ReadAsync(buffer);
-        //Package File
-        selectedFile.Id = new Guid();
-        selectedFile.TimeStamp = DateTime.Now;
-        selectedFile.UntrustedName = e.File.Name;
-        selectedFile.Size = e.File.Size;
-        selectedFile.Data = buffer;
-
-        await FileHandler.UploadFile(selectedFile);
-        NavManager.NavigateTo("files", true);
-    }
-
-
-    private Stream GetFileStream(byte[] filebyte)
-    {
-        var fileStream = new MemoryStream(filebyte);
-        return fileStream;
     }
 
     private async Task DownloadFileFromStream(Guid id)
@@ -130,11 +105,38 @@ else
         await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
     }
 
+     private Stream GetFileStream(byte[] filebyte)
+    {
+        var fileStream = new MemoryStream(filebyte);
+        return fileStream;
+    }
+
     private async Task Delete(Guid id)
     {
         await FileHandler.Delete(id);
         NavManager.NavigateTo("files", true);
     }
+
+    private async Task UploadFile(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms);
+            FileUploaded = ms.ToArray();
+
+            selectedFile.Id = new Guid();
+            selectedFile.UntrustedName = file.Name;
+            selectedFile.TimeStamp = DateTime.Now;
+            selectedFile.Size = file.Size;
+            selectedFile.Data = FileUploaded;
+            await FileHandler.UploadFile(selectedFile);
+            NavManager.NavigateTo("files", true);
+        }
+    }
+
+
 }
 
 

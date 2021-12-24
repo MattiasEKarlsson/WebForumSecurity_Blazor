@@ -1,11 +1,12 @@
 ﻿@page "/createpost"
 @using WebForumSecurity_Blazor.Models
+@using Microsoft.AspNetCore.Components.Forms
 @inject IPostRepository PostRep 
 
 
 <div class="row">
     <div class="col">
-        <EditForm Model="post" OnValidSubmit="HandleHotelRoomUpsert">
+        <EditForm Model="post" OnValidSubmit="HandlePost">
             <DataAnnotationsValidator />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -34,7 +35,7 @@
     {
         post = new Post();
     }
-    private async Task HandleHotelRoomUpsert()
+    private async Task HandlePost()
     {
         
                

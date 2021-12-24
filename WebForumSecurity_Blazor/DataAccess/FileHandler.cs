@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
@@ -36,7 +36,6 @@ namespace WebForumSecurity_Blazor.DataAccess
                 return null;
             }
             return applicationFile;
-           
         }
 
         public async Task<IEnumerable<ApplicationFile>> GetAllFiles()
@@ -53,7 +52,6 @@ namespace WebForumSecurity_Blazor.DataAccess
 
         public async Task Delete(Guid id)
         {
-            
             var file =  await _db.File.FirstOrDefaultAsync(f => f.Id == id);
              _db.Remove(file);
             await _db.SaveChangesAsync();
