@@ -14,9 +14,6 @@ namespace WebForumSecurity_Blazor.DataAccess
     public class FileHandler : IFileHandler
     {
         private readonly ApplicationDbContext _db;
-        
-        private readonly string[] permittedExtensions = { ".jpg" };
-
         public FileHandler(ApplicationDbContext db)
         {
             _db = db;
@@ -40,21 +37,52 @@ namespace WebForumSecurity_Blazor.DataAccess
 
         public async Task<IEnumerable<ApplicationFile>> GetAllFiles()
         {
-            IEnumerable<ApplicationFile> list = await _db.File.ToListAsync();
-            return list;
+            try
+            {
+                IEnumerable<ApplicationFile> list = await _db.File.ToListAsync();
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
         }
 
         public async Task UploadFile(ApplicationFile file)
         {
-            _db.Add(file);
-            await _db.SaveChangesAsync();
+            try
+            {
+                if (file!=null)
+                {
+                    _db.Add(file);
+                    await _db.SaveChangesAsync();
+                }
+                
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
         }
 
         public async Task Delete(Guid id)
         {
-            var file =  await _db.File.FirstOrDefaultAsync(f => f.Id == id);
-             _db.Remove(file);
-            await _db.SaveChangesAsync();
+            try
+            {
+                var file = await _db.File.FirstOrDefaultAsync(f => f.Id == id);
+                if (file!=null)
+                {
+                    _db.Remove(file);
+                    await _db.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
         }
 
         

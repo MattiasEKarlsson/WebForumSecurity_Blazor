@@ -1,47 +1,24 @@
 ﻿@page "/files"
-@*@using Microsoft.Extensions.Logging
-@using WebForumSecurity_Blazor.Models
-@inject IFileHandler FileHandler *@
 
 @using System 
 @using System.IO
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Logging
 @using System.Web
+@using WebForumSecurity_Blazor.FileTypes
 @using WebForumSecurity_Blazor.Models
 @using BlazorInputFile
 @using System.Net.Http
+@using WebForumSecurity_Blazor.Verify
 @inject IFileHandler FileHandler
 @inject IWebHostEnvironment Environment
 @inject IJSRuntime JS
 
 <h3>Upload Files</h3>
-<p>
-       <InputFile OnChange="UploadFile"  class="btn-primary"/>
-</p>
 
-@if (isLoading)
-{
-    <p>Uploading...</p>
-}
-else
-{
-    <ul>
-        @foreach (var file in loadedFiles)
-        {
-            <li>
-                <ul>
-                    <li>Name: @file.UntrustedName</li>
-                    <li>Last modified: @file.TimeStamp.ToString()</li>
-                    <li>Content type: @file.Data</li>
-                    
-                </ul>
-            </li>
-        }
-    </ul>
-}
-
-
+<InputFile OnChange="UploadFile"  class="btn-primary"/>
+<h5 class="text-danger">@Message</h5>
+       
 
 <table class="table">
     <thead>
@@ -82,13 +59,13 @@ else
 @code {
     private ApplicationFile selectedFile = new ApplicationFile();
     private byte[] FileUploaded;
-
-    private List<ApplicationFile> loadedFiles = new();
     private IEnumerable<ApplicationFile> Files { get; set; } = new List<ApplicationFile>();
 
-    private long maxFileSize = 10 * 1048576;
-    private int maxAllowedFiles = 1;
-    private bool isLoading;
+    private long maxFileSize = 2097152;
+    private string[] permittedExtensions = { ".txt", ".jpg", ".png"};
+    private string Message;
+    private FileTypeVerifier verifyer = new FileTypeVerifier();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -105,7 +82,7 @@ else
         await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
     }
 
-     private Stream GetFileStream(byte[] filebyte)
+    private Stream GetFileStream(byte[] filebyte)
     {
         var fileStream = new MemoryStream(filebyte);
         return fileStream;
@@ -119,22 +96,52 @@ else
 
     private async Task UploadFile(IFileListEntry[] files)
     {
+
         var file = files.FirstOrDefault();
         if (file != null)
         {
-            var ms = new MemoryStream();
-            await file.Data.CopyToAsync(ms);
-            FileUploaded = ms.ToArray();
+            var ext = Path.GetExtension(file.Name).ToLowerInvariant();
 
-            selectedFile.Id = new Guid();
-            selectedFile.UntrustedName = file.Name;
-            selectedFile.TimeStamp = DateTime.Now;
-            selectedFile.Size = file.Size;
-            selectedFile.Data = FileUploaded;
-            await FileHandler.UploadFile(selectedFile);
-            NavManager.NavigateTo("files", true);
+            if (file.Size < maxFileSize && permittedExtensions.Contains(ext))
+            {
+                var ms = new MemoryStream();
+                await file.Data.CopyToAsync(ms);
+                //var dd = verifyer.What(file.Data);
+
+                //if (dd.IsVerified)
+                //{
+                   FileUploaded = ms.ToArray();
+                   selectedFile.Id = new Guid();
+                   selectedFile.UntrustedName = ChangeName(file.Name);
+                   selectedFile.TimeStamp = DateTime.Now;
+                   selectedFile.Size = file.Size;
+                   selectedFile.Data = FileUploaded;
+                   await FileHandler.UploadFile(selectedFile);
+                   NavManager.NavigateTo("files", true);
+                //}
+                //else
+                //{
+                //     Message = "Invalid File Format";
+                //}
+            }
+            else
+            {
+                Message = "Invalid File Size or Format";
+            }
         }
     }
+
+    private  string ChangeName(string name)
+    {
+        int lenth = name.Count()/2-1;
+        var newName = name.Insert(lenth, Path.GetRandomFileName());
+        return newName;
+    }
+
+ 
+   
+
+       
 
 
 }

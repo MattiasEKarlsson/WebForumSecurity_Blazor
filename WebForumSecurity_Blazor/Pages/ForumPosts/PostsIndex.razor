@@ -12,7 +12,7 @@
       <div class="card m-2" style="width: 60vw; ">
         <div class="card-body">
             <p class="card-subtitle mb-2 text-muted" style="font-size: 0.5rem;">@post.TimeStamp</p>
-            <h3 class="card-title">@post.Header</h3>
+            <h3 class="card-title">@((MarkupString)post.Header)</h3>
             <p class="card-subtitle mb-2 text-muted" style="font-size: 1rem;">@((MarkupString)post.Content)</p>
         </div>
       </div>

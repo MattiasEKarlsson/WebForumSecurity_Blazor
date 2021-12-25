@@ -22,13 +22,18 @@ namespace WebForumSecurity_Blazor.DataAccess
                 post.Id = Guid.NewGuid();
                 post.TimeStamp = DateTime.Now;
                 string encodedContent = HttpUtility.HtmlEncode(post.Content);
+                string encodedHeader = HttpUtility.HtmlEncode(post.Header);
 
                 foreach (var tag in allowedTags)
                 {
                     string encodedTag = HttpUtility.HtmlEncode(tag);
                     encodedContent = encodedContent.Replace(encodedTag, tag);
+
+                    string encodedHeaderTag = HttpUtility.HtmlEncode(tag);
+                    encodedHeader = encodedHeader.Replace(encodedHeaderTag, tag);
                 }
                 post.Content = encodedContent;
+                post.Header = encodedHeader;
                 _db.Add(post);
                 await _db.SaveChangesAsync();
             
