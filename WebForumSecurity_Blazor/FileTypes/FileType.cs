@@ -2,8 +2,7 @@
 {
     public abstract class FileType
     {
-        public string Description { get; set; }
-        public string Name { get; set; }
+        
 
         public List<string> Extensions { get; }
             = new List<string>();
@@ -25,19 +24,17 @@
             return this;
         }
 
-        public FileTypeVerifyResult Verify(Stream stream)
+        public bool Verify(Stream stream)
         {
             stream.Position = 0;
             var reader = new BinaryReader(stream);
             var headerBytes = reader.ReadBytes(SignatureLength);
-
-            return new FileTypeVerifyResult
+            if (Signatures.Any(signature =>headerBytes.Take(signature.Length).SequenceEqual(signature)))
             {
-                IsVerified = Signatures.Any(signature =>
-                    headerBytes.Take(signature.Length)
-                        .SequenceEqual(signature)
-                )
-            };
+                return true;
+            }
+            else return false;
+            
         }
     }
 

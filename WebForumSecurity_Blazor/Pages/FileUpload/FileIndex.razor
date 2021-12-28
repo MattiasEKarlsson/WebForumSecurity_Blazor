@@ -58,12 +58,12 @@
 
 @code {
     private ApplicationFile selectedFile = new ApplicationFile();
-    private byte[] FileUploaded;
+    private byte[]? FileUploaded;
     private IEnumerable<ApplicationFile> Files { get; set; } = new List<ApplicationFile>();
 
     private long maxFileSize = 2097152;
     private string[] permittedExtensions = { ".txt", ".jpg", ".png"};
-    private string Message;
+    private string? Message;
     private FileTypeVerifier verifyer = new FileTypeVerifier();
 
 
@@ -106,9 +106,9 @@
             {
                 var ms = new MemoryStream();
                 await file.Data.CopyToAsync(ms);
-                //var dd = verifyer.What(file.Data);
+                //var isVerigyed = verifyer.What(file.Data);
 
-                //if (dd.IsVerified)
+                //if (isVerigyed)
                 //{
                    FileUploaded = ms.ToArray();
                    selectedFile.Id = new Guid();

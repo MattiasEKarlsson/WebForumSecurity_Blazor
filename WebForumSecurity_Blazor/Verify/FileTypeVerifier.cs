@@ -23,21 +23,25 @@ namespace WebForumSecurity_Blazor.Verify
 
         public IEnumerable<FileType> Types { get; set; }
 
-        public  FileTypeVerifyResult What(Stream path)
+        public  bool What(Stream path)
         {
-            using var file = path;
-            FileTypeVerifyResult result = null;
+            
+            bool result = false;
 
             foreach (var fileType in Types)
             {
-                result = fileType.Verify(file);
-                if (result.IsVerified)
-                    break;
+                result = fileType.Verify(path);
+                if (result)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }   
             }
-
-            return result?.IsVerified == true
-                   ? result
-                   : Unknown;
+            return false;
+            
         }
     }
 }
