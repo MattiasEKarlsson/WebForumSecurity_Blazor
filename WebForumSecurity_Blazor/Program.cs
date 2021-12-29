@@ -15,6 +15,7 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IFileHandler, FileHandler>();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

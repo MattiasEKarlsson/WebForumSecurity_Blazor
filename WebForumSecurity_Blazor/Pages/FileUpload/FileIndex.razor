@@ -2,12 +2,11 @@
 
 @using System 
 @using System.IO
+@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Logging
 @using System.Web
-@using WebForumSecurity_Blazor.FileTypes
 @using WebForumSecurity_Blazor.Models
-@using BlazorInputFile
 @using System.Net.Http
 @using WebForumSecurity_Blazor.Verify
 @inject IFileHandler FileHandler
@@ -60,11 +59,11 @@
     private ApplicationFile selectedFile = new ApplicationFile();
     private byte[]? FileUploaded;
     private IEnumerable<ApplicationFile> Files { get; set; } = new List<ApplicationFile>();
-
-    private long maxFileSize = 2097152;
+    
+    private long maxFileSize = 209715200;
     private string[] permittedExtensions = { ".txt", ".jpg", ".png"};
     private string? Message;
-    private FileTypeVerifier verifyer = new FileTypeVerifier();
+    private FileHelpers helper = new FileHelpers();
 
 
     protected override async Task OnInitializedAsync()
@@ -94,35 +93,36 @@
         NavManager.NavigateTo("files", true);
     }
 
-    private async Task UploadFile(IFileListEntry[] files)
+    private async Task UploadFile(InputFileChangeEventArgs e)
     {
+        MemoryStream ms = new MemoryStream();
+        await e.File.OpenReadStream(maxFileSize).CopyToAsync(ms);
+        var file = e.File;
+        var bytes = ms.ToArray();
 
-        var file = files.FirstOrDefault();
         if (file != null)
         {
             var ext = Path.GetExtension(file.Name).ToLowerInvariant();
 
             if (file.Size < maxFileSize && permittedExtensions.Contains(ext))
             {
-                var ms = new MemoryStream();
-                await file.Data.CopyToAsync(ms);
-                //var isVerigyed = verifyer.What(file.Data);
+                FileUploaded = ms.ToArray();
+                Stream stream = new MemoryStream(FileUploaded);
+                if (helper.CheckIfValid(stream, ext))
+                {
+                    selectedFile.Id = new Guid();
+                    selectedFile.UntrustedName = helper.ChangeName(file.Name);
+                    selectedFile.TimeStamp = DateTime.Now;
+                    selectedFile.Size = file.Size;
+                    selectedFile.Data = FileUploaded;
+                    await FileHandler.UploadFile(selectedFile);
+                    NavManager.NavigateTo("files", true);
+                }
+                else
+                {
+                    Message = "Invalid File Format"; 
+                }
 
-                //if (isVerigyed)
-                //{
-                   FileUploaded = ms.ToArray();
-                   selectedFile.Id = new Guid();
-                   selectedFile.UntrustedName = ChangeName(file.Name);
-                   selectedFile.TimeStamp = DateTime.Now;
-                   selectedFile.Size = file.Size;
-                   selectedFile.Data = FileUploaded;
-                   await FileHandler.UploadFile(selectedFile);
-                   NavManager.NavigateTo("files", true);
-                //}
-                //else
-                //{
-                //     Message = "Invalid File Format";
-                //}
             }
             else
             {
@@ -131,14 +131,13 @@
         }
     }
 
-    private  string ChangeName(string name)
-    {
-        int lenth = name.Count()/2-1;
-        var newName = name.Insert(lenth, Path.GetRandomFileName());
-        return newName;
-    }
+    
 
- 
+
+
+
+    
+
    
 
        
