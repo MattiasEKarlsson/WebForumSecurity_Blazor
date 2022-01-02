@@ -13,11 +13,12 @@
 @inject IWebHostEnvironment Environment
 @inject IJSRuntime JS
 
-<h3>Upload Files</h3>
+<h3>Files</h3>
+<div class="container">
+    <InputFile OnChange="UploadFile" />
+    <h5 class="text-danger">@Message</h5>
+</div>
 
-<InputFile OnChange="UploadFile"  class="btn-primary"/>
-<h5 class="text-danger">@Message</h5>
-       
 
 <table class="table">
     <thead>
@@ -47,7 +48,7 @@
                 @file.Size
             </td>            
             <td>     
-                 <button @onclick="()=>DownloadFileFromStream(file.Id)" class="btn btn-primary" >Download</button>
+                 <button @onclick="()=>DownloadFileFromStream(file.Id)" class="btn btn-primary">Download</button>
                  <button @onclick="()=>Delete(file.Id)" class="btn btn-danger">Delete</button>
             </td>
         </tr>
@@ -59,7 +60,7 @@
     private ApplicationFile selectedFile = new ApplicationFile();
     private byte[]? FileUploaded;
     private IEnumerable<ApplicationFile> Files { get; set; } = new List<ApplicationFile>();
-    
+
     private long maxFileSize = 209715200;
     private string[] permittedExtensions = { ".txt", ".jpg", ".png"};
     private string? Message;
@@ -90,7 +91,7 @@
     private async Task Delete(Guid id)
     {
         await FileHandler.Delete(id);
-        NavManager.NavigateTo("files", true);
+        await OnInitializedAsync();
     }
 
     private async Task UploadFile(InputFileChangeEventArgs e)
@@ -116,7 +117,7 @@
                     selectedFile.Size = file.Size;
                     selectedFile.Data = FileUploaded;
                     await FileHandler.UploadFile(selectedFile);
-                    NavManager.NavigateTo("files", true);
+                    await OnInitializedAsync();
                 }
                 else
                 {
