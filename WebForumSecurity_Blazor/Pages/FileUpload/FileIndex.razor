@@ -9,52 +9,37 @@
 @using WebForumSecurity_Blazor.Models
 @using System.Net.Http
 @using WebForumSecurity_Blazor.Verify
+@using static System.Net.Mime.MediaTypeNames
 @inject IFileHandler FileHandler
 @inject IWebHostEnvironment Environment
 @inject IJSRuntime JS
 
-<h3>Files</h3>
+
 <div class="container">
-    <InputFile OnChange="UploadFile" />
+    <div class="file-input-zone rounded"><InputFile OnChange="UploadFile" />Upload a File</div>
     <h5 class="text-danger">@Message</h5>
 </div>
-
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Uploaded
-            </th>
-            <th>
-                Name
-            </th>
-            <th>
-                Size
-            </th>            
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var file in Files) {
-        <tr>
-            <td>
-                @file.TimeStamp
-            </td>
-            <td>
-                @file.UntrustedName
-            </td>
-            <td>
-                @file.Size
-            </td>            
-            <td>     
-                 <button @onclick="()=>DownloadFileFromStream(file.Id)" class="btn btn-primary">Download</button>
-                 <button @onclick="()=>Delete(file.Id)" class="btn btn-danger">Delete</button>
-            </td>
-        </tr>
+<div class="container row">
+    @foreach (var file in Files) {
+       
+       <div class="card m-2 asa " style="width: 18rem;">
+           <img src="data:image/png;base64,@Convert.ToBase64String(file.Data, 0, file.Data.Length)" class="card-img-top pt-2 asa" alt="...">
+           <div class="d-flex justify-content-center">
+            <p>Uploaded:</p>
+            <p>@file.TimeStamp</p>
+        </div>
+        <div class="d-flex justify-content-center">
+            <p>Size:</p>
+            <p>@file.Size</p>
+        </div>  
+        <div class="card-body">
+           <button @onclick="()=>DownloadFileFromStream(file.Id)" class="btn btn-primary">Download</button>
+           <button @onclick="()=>Delete(file.Id)" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
 }
-    </tbody>
-</table>
+</div>
+
 
 @code {
     private ApplicationFile selectedFile = new ApplicationFile();
@@ -118,6 +103,7 @@
                     selectedFile.Data = FileUploaded;
                     await FileHandler.UploadFile(selectedFile);
                     await OnInitializedAsync();
+                    Message = ""; 
                 }
                 else
                 {
@@ -131,6 +117,7 @@
             }
         }
     }
+   
 
     
 

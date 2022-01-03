@@ -10,21 +10,18 @@
             <DataAnnotationsValidator />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label>Header</label>
-                <InputText @bind-Value="post.Header" class="form-control"></InputText>
+                <label>Title</label>
+                <InputText @bind-Value="post.Header" class="form-control" placeholder="Enter title here..."></InputText>
                 
             </div>
             <div class="form-group">
                 <label>Content</label>
-                <InputTextArea rows="20" cols="100" style="resize:none" @bind-Value="post.Content" class="form-control"></InputTextArea>
+                <InputTextArea rows="20" cols="100" style="resize:none" @bind-Value="post.Content" class="form-control" placeholder="Write your content here..."></InputTextArea>
             </div>
             <div class="form-group mt-2">
-                <input type="submit" value="POST" class="btn btn-secondary w-100" />
+                <input type="submit" value="POST" class="btn btn-danger w-100" />
             </div>
-            <div class="form-group mt-3">
-                    
-                    <NavLink href="postindex" class="btn btn-dark w-100">Back</NavLink>
-                </div>
+            
         </EditForm>
     </div>
 </div>

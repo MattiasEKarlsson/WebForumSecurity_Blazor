@@ -18,7 +18,8 @@ namespace WebForumSecurity_Blazor.DataAccess
 
         public async Task CreatePost(Post post)
         {
-            
+            if (post != null)
+            {
                 post.Id = Guid.NewGuid();
                 post.TimeStamp = DateTime.Now;
                 string encodedContent = HttpUtility.HtmlEncode(post.Content);
@@ -36,7 +37,7 @@ namespace WebForumSecurity_Blazor.DataAccess
                 post.Header = encodedHeader;
                 _db.Add(post);
                 await _db.SaveChangesAsync();
-            
+            }
             
         }
 
@@ -52,8 +53,16 @@ namespace WebForumSecurity_Blazor.DataAccess
 
         public async Task<IEnumerable<Post>> GetAllPosts()
         {
-            var lastPosts = await _db.Posts.OrderByDescending(p => p.TimeStamp).Take(5).ToListAsync();
-            return lastPosts;
+            try
+            {
+                var lastPosts = await _db.Posts.OrderByDescending(p => p.TimeStamp).Take(5).ToListAsync();
+                return lastPosts;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
             
         }
 

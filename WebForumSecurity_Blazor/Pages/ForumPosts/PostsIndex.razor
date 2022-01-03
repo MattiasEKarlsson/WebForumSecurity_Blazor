@@ -3,11 +3,13 @@
 @inject IPostRepository PostRep 
 
 <p>
-    <NavLink href="createpost" class="btn btn-secondary w-100" style="width: 60vw" asp-action="Create">Create New Post</NavLink>
+    
 </p>
 
 <div class="container d-flex justify-content-center">
+
     <div>
+        <NavLink href="createpost" class="btn btn-danger w-10 m-2"  asp-action="Create">New Post</NavLink>
      @foreach (var post in Posts) {
       <div class="card m-2" style="width: 60vw; ">
         <div class="card-body">
